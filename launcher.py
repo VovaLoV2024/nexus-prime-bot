@@ -118,9 +118,86 @@ def read_version():
     return versions
 
 def check_github_versions(local_versions):
-    """Проверяет версии на GitHub (заглушка)"""
+    """Проверяет версии на GitHub и автоматически обновляется при необходимости"""
     print(f"{Colors.BLUE}[3/6] Проверка обновлений...{Colors.RESET}")
-    print(f"  ~ Проверка GitHub... (требуется реализация)")
+    
+    github_url = "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/VERSION.txt"
+    
+    try:
+        import urllib.request
+        
+        # Скачиваем VERSION.txt с GitHub
+        with urllib.request.urlopen(github_url, timeout=5) as response:
+            github_content = response.read().decode('utf-8')
+        
+        # Парсим версии из GitHub
+        github_versions = {}
+        for line in github_content.splitlines():
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                github_versions[key.strip()] = value.strip()
+        
+        github_launcher = github_versions.get('launcher_version', 'unknown')
+        github_bot = github_versions.get('bot_version', 'unknown')
+        
+        local_launcher = local_versions.get('launcher_version', 'unknown')
+        local_bot = local_versions.get('bot_version', 'unknown')
+        
+        print(f"  Локальная версия лаунчера: v{local_launcher}")
+        print(f"  Версия на GitHub: v{github_launcher}")
+        print(f"  Локальная версия бота: v{local_bot}")
+        print(f"  Версия бота на GitHub: v{github_bot}")
+        
+        # Сравниваем версии
+        needs_update = False
+        if github_launcher != local_launcher:
+            print(f"  {Colors.YELLOW}⚠️  Доступна новая версия лаунчера: v{github_launcher}{Colors.RESET}")
+            needs_update = True
+        
+        if github_bot != local_bot:
+            print(f"  {Colors.YELLOW}⚠️  Доступна новая версия бота: v{github_bot}{Colors.RESET}")
+            needs_update = True
+        
+        if needs_update:
+            print(f"\n  {Colors.CYAN}🔄 Начинаю автоматическое обновление...{Colors.RESET}")
+            
+            # Проверяем, есть ли git репозиторий
+            git_dir = Path(__file__).parent / ".git"
+            if not git_dir.exists():
+                print(f"  {Colors.RED}✗ Не удалось обновить: это не Git-репозиторий{Colors.RESET}")
+                print(f"  {Colors.CYAN}Чтобы обновиться вручную:{Colors.RESET}")
+                print(f"  cd /workspace && git init && git remote add origin https://github.com/VovaLoV2024/nexus-prime-bot.git")
+                print(f"  git pull origin main --force")
+                return
+            
+            # Пытаемся сделать git pull
+            import subprocess
+            result = subprocess.run(
+                ["git", "pull", "origin", "main", "--force"],
+                cwd=str(Path(__file__).parent),
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode == 0:
+                print(f"  {Colors.GREEN}✓ Обновление успешно загружено!{Colors.RESET}")
+                print(f"  {Colors.CYAN}Перезапускаю лаунчер для применения обновлений...{Colors.RESET}")
+                
+                # Перезапускаем лаунчер с новыми файлами
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+            else:
+                print(f"  {Colors.RED}✗ Ошибка при обновлении: {result.stderr}{Colors.RESET}")
+                print(f"  {Colors.CYAN}Попробуйте обновиться вручную:{Colors.RESET}")
+                print(f"  git pull origin main --force")
+        else:
+            print(f"  {Colors.GREEN}✓ Установлена последняя версия{Colors.RESET}")
+            
+    except Exception as e:
+        print(f"  {Colors.YELLOW}~ Не удалось проверить обновления: {e}{Colors.RESET}")
+        print(f"  ~ Продолжаем работу с локальными версиями...")
+    
     print(f"  {Colors.GREEN}✓ Проверка обновлений завершена{Colors.RESET}\n")
 
 def get_config_path():
