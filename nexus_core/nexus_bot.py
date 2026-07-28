@@ -55,7 +55,7 @@ async def on_ready():
     print(f"📊 Подключен к {len(bot.guilds)} серверам")
     print("=" * 50)
 
-@bot.command(name="помощь", aliases=["commands", "help"])
+@bot.command(name="помощь", aliases=["команды"])
 async def help_command(ctx):
     """Показывает список команд"""
     embed = discord.Embed(
@@ -69,7 +69,7 @@ async def help_command(ctx):
     embed.add_field(name="!сервер", value="Информация о сервере", inline=False)
     embed.add_field(name="!прайм", value="Установить владельца (только для автора сообщения)", inline=False)
     embed.add_field(name="!статус", value="Показать статус бота", inline=False)
-    embed.set_footer(text=f"Nexus Prime Bot v1.4.0 | Автор: Вова (VovaLoV)")
+    embed.set_footer(text=f"Nexus Prime Bot v1.4.1 | Автор: Вова (VovaLoV)")
     await ctx.send(embed=embed)
 
 @bot.command(name="пинг", aliases=["ping"])
@@ -86,7 +86,7 @@ async def info_command(ctx):
         description="Nexus Prime Bot - бот для управления мультивселенной Нексус Прайм",
         color=discord.Color.green()
     )
-    embed.add_field(name="Версия", value="1.4.0 (Beta)", inline=True)
+    embed.add_field(name="Версия", value="1.4.1 (Beta)", inline=True)
     embed.add_field(name="Библиотека", value="discord.py", inline=True)
     embed.add_field(name="Серверов", value=str(len(bot.guilds)), inline=True)
     embed.add_field(name="Разработчик", value="Вова (VovaLoV)", inline=False)
@@ -143,7 +143,7 @@ async def status_command(ctx):
     )
     embed.add_field(name="Статус", value="🟢 Онлайн", inline=True)
     embed.add_field(name="Пинг", value=f"{round(bot.latency * 1000)}ms", inline=True)
-    embed.add_field(name="Версия", value="1.4.0", inline=True)
+    embed.add_field(name="Версия", value="1.4.1", inline=True)
     embed.add_field(name="Владелец", value=f"<@{owner_id}>" if owner_id else "Не установлен", inline=False)
     embed.add_field(name="Серверов", value=str(len(bot.guilds)), inline=True)
     embed.add_field(name="Пользователей", value=str(len(set(bot.get_all_members()))), inline=True)
