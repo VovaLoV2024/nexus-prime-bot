@@ -1,0 +1,8 @@
+launcher_version=1.4.0
+bot_version=1.4.0
+release_tag=beta
+
+# ИНСТРУКЦИЯ:
+# Если меняешь launcher.py → увеличь launcher_version
+# Если меняешь nexus_bot.py → увеличь bot_version
+# release_tag=stable когда проект готов

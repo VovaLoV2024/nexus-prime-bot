@@ -1,0 +1,14 @@
+{
+  "roles": {
+    "owner": "Владелец Нексус Прайм",
+    "admin": "Администратор",
+    "moderator": "Модератор",
+    "member": "Участник"
+  },
+  "permissions": {
+    "owner": ["*"],
+    "admin": ["manage_channels", "manage_roles", "kick_members", "ban_members"],
+    "moderator": ["manage_messages", "mute_members", "deafen_members"],
+    "member": ["send_messages", "read_messages"]
+  }
+}
