@@ -1,0 +1,12 @@
+{
+  "roles": {
+    "admin": "Администратор",
+    "moderator": "Модератор",
+    "member": "Участник"
+  },
+  "permissions": {
+    "admin": ["all"],
+    "moderator": ["kick", "ban", "mute"],
+    "member": ["read", "write"]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "channels": {
+    "general": "Общий чат",
+    "announcements": "Объявления",
+    "bot_commands": "Команды бота"
+  },
+  "settings": {
+    "welcome_channel": "general",
+    "log_channel": "announcements"
+  }
+}
