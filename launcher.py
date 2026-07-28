@@ -109,10 +109,12 @@ def read_version():
     launcher_ver = versions.get('launcher_version', 'unknown')
     bot_ver = versions.get('bot_version', 'unknown')
     release_tag = versions.get('release_tag', 'unknown')
+    website_enabled = versions.get('website_enabled', '0')
     
     print(f"  ✓ Лаунчер: v{launcher_ver}")
     print(f"  ✓ Бот: v{bot_ver}")
     print(f"  ✓ Статус: {release_tag}")
+    print(f"  ✓ Сайт: {'включен' if website_enabled == '1' else 'отключен'}")
     print(f"  {Colors.GREEN}✓ Версии прочитаны{Colors.RESET}\n")
     
     return versions
@@ -120,7 +122,14 @@ def read_version():
 def check_github_versions(local_versions):
     """Проверяет версии на GitHub (заглушка)"""
     print(f"{Colors.BLUE}[3/6] Проверка обновлений...{Colors.RESET}")
-    print(f"  ~ Проверка GitHub... (требуется реализация)")
+    
+    # Проверяем, включен ли сайт
+    website_enabled = local_versions.get('website_enabled', '0')
+    if website_enabled == '1':
+        print(f"  ~ Сайт: проверка обновлений сайта... (требуется реализация)")
+    else:
+        print(f"  ~ Сайт: отключен, проверка не выполняется")
+    
     print(f"  {Colors.GREEN}✓ Проверка обновлений завершена{Colors.RESET}\n")
 
 def get_config_path():
