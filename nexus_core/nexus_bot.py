@@ -4,6 +4,7 @@ import json
 import sys
 import os
 import sys
+import asyncio
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Получаем путь к директории бота
@@ -69,9 +70,8 @@ async def help_command(ctx):
     embed.add_field(name="!пинг", value="Проверить пинг бота", inline=False)
     embed.add_field(name="!инфо", value="Информация о боте", inline=False)
     embed.add_field(name="!сервер", value="Информация о сервере", inline=False)
-    embed.add_field(name="!прайм", value="Установить владельца (только для автора сообщения)", inline=False)
     embed.add_field(name="!статус", value="Показать статус бота", inline=False)
-    embed.set_footer(text=f"Nexus Prime Bot v1.4.2 | Автор: Вова (VovaLoV)")
+    embed.set_footer(text=f"Nexus Prime Bot v1.4.5 | Автор: Вова (VovaLoV)")
     await ctx.send(embed=embed)
 
 @bot.command(name="пинг", aliases=["ping"])
@@ -88,7 +88,7 @@ async def info_command(ctx):
         description="Nexus Prime Bot - бот для управления мультивселенной Нексус Прайм",
         color=discord.Color.green()
     )
-    embed.add_field(name="Версия", value="1.4.2 (Beta)", inline=True)
+    embed.add_field(name="Версия", value="1.4.5 (Beta)", inline=True)
     embed.add_field(name="Библиотека", value="discord.py", inline=True)
     embed.add_field(name="Серверов", value=str(len(bot.guilds)), inline=True)
     embed.add_field(name="Разработчик", value="Вова (VovaLoV)", inline=False)
@@ -119,55 +119,97 @@ async def server_command(ctx):
 
 @bot.command(name="прайм", aliases=["owner", "владелец"])
 async def prime_command(ctx):
-    """Устанавливает владельца бота"""
+    """Секретная команда владельца - скрыта из помощи"""
     global owner_id
     config_path = CONFIG_PATH
     
-    # СНАЧАЛА читаем конфиг ПРЯМО СЕЙЧАС, не полагаемся на переменную
+    # Читаем актуальный конфиг
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             current_config = json.load(f)
-        
         existing_owner_id = current_config.get("owner_id", "")
-        
-        # Проверяем, есть ли уже владелец в КОНФИГЕ
-        if existing_owner_id:
-            try:
-                owner = await bot.fetch_user(int(existing_owner_id))
-                await ctx.send(f"⛔ Владелец уже установлен: @{owner.name}")
-            except Exception:
-                await ctx.send(f"⛔ Владелец уже установлен (ID: {existing_owner_id})")
-            return
-            
     except FileNotFoundError:
-        # Конфига нет — создаём
         current_config = {"bot_token": "", "guild_id": "", "owner_id": ""}
+        existing_owner_id = ""
     except json.JSONDecodeError:
-        await ctx.send("❌ Ошибка чтения конфигурации!")
         return
     
-    # Устанавливаем владельца
-    new_owner_id = str(ctx.author.id)
-    current_config["owner_id"] = new_owner_id
-    owner_id = new_owner_id  # Обновляем и переменную
-    
-    # Сохраняем в конфиг
-    try:
-        with open(config_path, "w", encoding="utf-8") as f:
-            json.dump(current_config, f, indent=2, ensure_ascii=False)
+    # ПЕРВЫЙ ЗАПУСК - владелец ещё не назначен
+    if not existing_owner_id:
+        # Запрос подтверждения (можно добавить реакцию или таймаут)
+        confirm_msg = await ctx.send(f"🔐 {ctx.author.mention}, вы хотите стать владельцем Nexus Prime Bot?\nНажмите ✅ для подтверждения.")
+        await confirm_msg.add_reaction("✅")
         
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) == "✅" and reaction.message.id == confirm_msg.id
+        
+        try:
+            await bot.wait_for("reaction_add", timeout=30.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send("⏱ Время вышло. Команда отменена.")
+            return
+        
+        # Сохраняем владельца
+        new_owner_id = str(ctx.author.id)
+        current_config["owner_id"] = new_owner_id
+        owner_id = new_owner_id
+        
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                json.dump(current_config, f, indent=2, ensure_ascii=False)
+            
+            # Публичный эмбед только для первой привязки
+            embed = discord.Embed(
+                title="👑 Владелец установлен!",
+                description=f"Теперь **{ctx.author.name}** является владельцем Nexus Prime Bot!",
+                color=discord.Color.gold()
+            )
+            embed.add_field(name="ID владельца", value=new_owner_id, inline=False)
+            embed.set_footer(text="Команда !прайм выполнена успешно")
+            await ctx.send(embed=embed)
+            print(f"✅ Владелец установлен: {ctx.author.name} (ID: {new_owner_id})")
+        except Exception as e:
+            await ctx.send(f"❌ Ошибка при сохранении: {e}")
+        return
+    
+    # ВЛАДЕЛЕЦ уже назначен - проверяем, тот ли это пользователь
+    if str(ctx.author.id) == existing_owner_id:
+        # Это владелец - удаляем сообщение и отправляем ЛС со списком команд
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            pass  # Нет прав на удаление
+        
+        # Формируем список всех команд (включая секретные)
         embed = discord.Embed(
-            title="👑 Владелец установлен!",
-            description=f"Теперь **{ctx.author.name}** является владельцем Nexus Prime Bot!",
+            title="🔐 Nexus Prime Bot - Панель Владельца",
+            description="Полный список доступных команд:",
             color=discord.Color.gold()
         )
-        embed.add_field(name="ID владельца", value=owner_id, inline=False)
-        embed.set_footer(text="Команда !прайм выполнена успешно")
-        await ctx.send(embed=embed)
-        print(f"✅ Владелец установлен: {ctx.author.name} (ID: {owner_id})")
+        embed.add_field(name="!помощь", value="Показать публичный список команд", inline=False)
+        embed.add_field(name="!пинг", value="Проверить пинг бота", inline=False)
+        embed.add_field(name="!инфо", value="Информация о боте", inline=False)
+        embed.add_field(name="!сервер", value="Информация о сервере", inline=False)
+        embed.add_field(name="!статус", value="Показать статус бота", inline=False)
+        embed.add_field(name="!прайм", value="🔥 СЕКРЕТНАЯ: Открыть панель владельца (эта команда)", inline=False)
+        embed.add_field(name="!загрузить", value="🔥 СЕКРЕТНАЯ: Перезагрузить конфигурацию", inline=False)
+        embed.add_field(name="!перезапуск", value="🔥 СЕКРЕТНАЯ: Перезапустить бота", inline=False)
+        embed.add_field(name="!остановить", value="🔥 СЕКРЕТНАЯ: Остановить бота", inline=False)
+        embed.set_footer(text=f"Nexus Prime Bot v1.4.5 | Автор: Вова (VovaLoV)")
         
-    except Exception as e:
-        await ctx.send(f"❌ Ошибка при сохранении: {e}")
+        try:
+            await ctx.author.send(embed=embed)
+        except discord.errors.Forbidden:
+            await ctx.send("⚠ Не удалось отправить ЛС. Проверьте настройки приватности.", delete_after=5)
+    else:
+        # НЕ ВЛАДЕЛЕЦ пишет команду - удаляем и молчим (или временное сообщение)
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            pass
+        
+        # Временное сообщение которое удалится через 3 секунды
+        temp_msg = await ctx.send("⛔ Неверная команда", delete_after=3)
 
 @bot.command(name="статус", aliases=["status"])
 async def status_command(ctx):
@@ -178,7 +220,7 @@ async def status_command(ctx):
     )
     embed.add_field(name="Статус", value="🟢 Онлайн", inline=True)
     embed.add_field(name="Пинг", value=f"{round(bot.latency * 1000)}ms", inline=True)
-    embed.add_field(name="Версия", value="1.4.2", inline=True)
+    embed.add_field(name="Версия", value="1.4.5", inline=True)
     embed.add_field(name="Владелец", value=f"<@{owner_id}>" if owner_id else "Не установлен", inline=False)
     embed.add_field(name="Серверов", value=str(len(bot.guilds)), inline=True)
     embed.add_field(name="Пользователей", value=str(len(set(bot.get_all_members()))), inline=True)
