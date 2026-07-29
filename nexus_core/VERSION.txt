@@ -1,5 +1,5 @@
-launcher_version=1.4.3
-bot_version=1.4.4
+launcher_version=1.4.4
+bot_version=1.4.5
 release_tag=beta
 website_enabled=0
 
