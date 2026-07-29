@@ -88,23 +88,50 @@ def create_sandbox():
     """Создает временную папку-песочницу"""
     print(f"{Colors.BLUE}[2/6] Создание песочницы...{Colors.RESET}")
     
-    # Путь к nexus_core
-    nexus_core_dir = Path(__file__).parent
+    # Определяем путь к nexus_core
+    # Если запускаемся из update_sandbox, то parent будет nexus_core
+    current_dir = Path(__file__).parent
+    if current_dir.name == "update_sandbox":
+        nexus_core_dir = current_dir.parent
+    else:
+        nexus_core_dir = current_dir
     
     # Создаем песочницу внутри nexus_core
     sandbox_dir = nexus_core_dir / "update_sandbox"
     
-    # Если уже существует - удаляем
-    if sandbox_dir.exists():
-        shutil.rmtree(sandbox_dir)
-        print(f"  Удалена старая песочница")
+    # Сохраняем папку history если она существует
+    history_dir = sandbox_dir / "history"
+    history_backup = None
+    if history_dir.exists():
+        # Временно перемещаем history
+        import tempfile
+        history_backup = tempfile.mkdtemp(prefix="nexus_history_")
+        shutil.move(str(history_dir), history_backup)
+        print(f"  Сохранена история обновлений")
     
-    # Создаем новую
-    sandbox_dir.mkdir(parents=True, exist_ok=True)
+    # Если уже существует - удаляем только содержимое кроме history
+    if sandbox_dir.exists():
+        for item in sandbox_dir.iterdir():
+            if item.name != "history":
+                if item.is_file():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+        print(f"  Очищена старая песочница")
+    else:
+        # Создаем новую
+        sandbox_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Восстанавливаем history
+    if history_backup and os.path.exists(history_backup):
+        shutil.move(os.path.join(history_backup, "history"), str(sandbox_dir))
+        shutil.rmtree(history_backup)
+        print(f"  Восстановлена история обновлений")
+    
     print(f"  ✓ Песочница создана: {sandbox_dir}")
     print(f"  {Colors.GREEN}✓ Песочница готова{Colors.RESET}\n")
     
-    return sandbox_dir
+    return sandbox_dir, nexus_core_dir
 
 def download_files_to_sandbox(sandbox_dir):
     """Скачивает свежие файлы с GitHub в песочницу"""
@@ -206,11 +233,11 @@ if __name__ == "__main__":
     # 1. Проверяем активные процессы
     check_running_processes()
     
-    # 2. Создаем песочницу
-    sandbox_dir = create_sandbox()
+    # 2. Создаем песочницу (получаем и sandbox_dir, и nexus_core_dir)
+    sandbox_dir, nexus_core_dir = create_sandbox()
     
     # 3. Создаем папку истории
-    history_dir = Path(__file__).parent / "update_sandbox" / "history"
+    history_dir = sandbox_dir / "history"
     history_dir.mkdir(parents=True, exist_ok=True)
     
     # 4. Создаем папку для текущего обновления с датой/временем
@@ -244,7 +271,6 @@ if __name__ == "__main__":
             "VERSION.txt"
         ]
         
-        nexus_core_dir = Path(__file__).parent
         for filename in files_to_backup:
             src = nexus_core_dir / filename
             if src.exists():
@@ -304,9 +330,12 @@ if __name__ == "__main__":
         
         print(f"{Colors.GREEN}✓ Обновление завершено успешно!{Colors.RESET}\n")
         
-        # 12. Запускаем обновленный launcher.py
+        # 12. Запускаем обновленный launcher.py ИЗ КОРНЯ ПРОЕКТА
         print(f"{Colors.CYAN}Запускаю обновленный лаунчер...{Colors.RESET}")
+        # nexus_core_dir - это /workspace/nexus_core
+        # launcher.py находится в /workspace/launcher.py
         launcher_path = nexus_core_dir.parent / "launcher.py"
+        print(f"  Путь к launcher.py: {launcher_path}")
         subprocess.Popen([sys.executable, str(launcher_path)])
         
         # 13. Ждем немного и завершаемся
