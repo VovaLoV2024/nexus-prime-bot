@@ -174,15 +174,15 @@ def check_github_versions(local_versions):
             print(f"  {Colors.YELLOW}~ Найдено обновление!{Colors.RESET}")
             print(f"  {Colors.CYAN}Запускаю nexus_updater.py...{Colors.RESET}")
             
-            # Скачиваем nexus_updater.py во временную папку
-            import tempfile
+            # Создаём песочницу внутри nexus_core/update_sandbox/
             import subprocess
-            
-            temp_dir = Path(tempfile.gettempdir()) / "nexus_update"
-            temp_dir.mkdir(exist_ok=True)
-            
+
+            nexus_core_dir = Path(__file__).parent / "nexus_core"
+            sandbox_dir = nexus_core_dir / "update_sandbox"
+            sandbox_dir.mkdir(exist_ok=True)
+
             updater_url = "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/nexus_updater.py"
-            updater_path = temp_dir / "nexus_updater.py"
+            updater_path = sandbox_dir / "nexus_updater.py"
             
             try:
                 with urllib.request.urlopen(updater_url, timeout=10) as response:
@@ -194,12 +194,11 @@ def check_github_versions(local_versions):
                 print(f"  {Colors.GREEN}✓ Updater скачан{Colors.RESET}")
                 print(f"  {Colors.YELLOW}Лаунчер завершается, передаю управление updater'у...{Colors.RESET}")
                 
-                # Запускаем updater
+                # Запускаем updater из песочницы
                 subprocess.Popen([sys.executable, str(updater_path)])
-                
                 # Завершаем лаунчер
                 sys.exit(0)
-                
+
             except Exception as e:
                 print(f"  {Colors.RED}✗ Ошибка скачивания updater'а: {e}{Colors.RESET}")
                 print(f"  {Colors.YELLOW}~ Продолжаем без обновления...{Colors.RESET}")
