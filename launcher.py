@@ -14,6 +14,7 @@ import subprocess
 import signal
 import platform
 import shutil
+import time
 from pathlib import Path
 
 # Цвета для консоли
