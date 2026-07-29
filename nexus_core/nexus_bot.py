@@ -3,6 +3,8 @@ from discord.ext import commands
 import json
 import sys
 import os
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Получаем путь к директории бота
 BOT_DIR = os.path.dirname(os.path.abspath(__file__))
