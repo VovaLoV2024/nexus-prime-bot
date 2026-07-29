@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Prime Bot - Discord-бот для управления мультивселенной</title>
+    <meta name="description" content="Современный Discord-бот с автономным запуском, авто-обновлением и умной системой владельца">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Nexus Prime Bot">
+    <meta property="og:description" content="Discord-бот для управления мультивселенной">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://github.githubassets.com/images/modules/open_graph/github-logo.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">Nexus Prime</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">Главная</a></li>
+                <li><a href="#about">О проекте</a></li>
+                <li><a href="#features">Преимущества</a></li>
+                <li><a href="#install">Установка</a></li>
+                <li><a href="#status">Статус</a></li>
+            </ul>
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    v1.4.4 Beta
+                </div>
+                <h1 class="hero-title">
+                    <span class="gradient-text">Nexus Prime Bot</span>
+                </h1>
+                <p class="hero-subtitle">Discord-бот для управления мультивселенной</p>
+                <p class="hero-description">
+                    Современный, мощный и надежный бот с автономным запуском, 
+                    автоматическим обновлением и интеллектуальной системой управления
+                </p>
+                <div class="hero-buttons">
+                    <a href="#install" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Начать использование
+                    </a>
+                    <a href="https://github.com/VovaLoV/Nexus-Prime-Bot" target="_blank" class="btn btn-secondary">
+                        <i class="fab fa-github"></i>
+                        GitHub
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-code-branch"></i>
+                        <span>Активная разработка</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Безопасный</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Быстрый</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="bot-avatar">
+                    <div class="avatar-glow"></div>
+                    <div class="avatar-circle">
+                        <span class="avatar-emoji">🤖</span>
+                    </div>
+                    <div class="floating-elements">
+                        <div class="float-element float-1"><i class="fas fa-cog"></i></div>
+                        <div class="float-element float-2"><i class="fas fa-star"></i></div>
+                        <div class="float-element float-3"><i class="fas fa-bolt"></i></div>
+                        <div class="float-element float-4"><i class="fas fa-shield-alt"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <p>Листайте вниз</p>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">О проекте</span>
+                </h2>
+                <p class="section-subtitle">Мощный инструмент для вашего Discord сервера</p>
+            </div>
+            <div class="about-content">
+                <div class="about-card glass-card">
+                    <div class="about-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Что такое Nexus Prime Bot?</h3>
+                    <p>
+                        Nexus Prime Bot — это современный Discord-бот нового поколения, 
+                        созданный для обеспечения максимального контроля и автоматизации 
+                        вашего сервера. С интеллектуальной системой владельца, 
+                        автономным запуском и автоматическими обновлениями.
+                    </p>
+                </div>
+                <div class="about-features">
+                    <div class="feature-item glass-card">
+                        <i class="fas fa-play-circle feature-icon"></i>
+                        <div>
+                            <h4>Автономный запуск</h4>
+                            <p>Запуск через launcher.py с полной автоматизацией</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-card">
+                        <i class="fas fa-sync-alt feature-icon"></i>
+                        <div>
+                            <h4>Авто-обновление</h4>
+                            <p>Автоматическое обновление с GitHub</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-card">
+                        <i class="fas fa-user-shield feature-icon"></i>
+                        <div>
+                            <h4>Система владельца</h4>
+                            <p>Умная система управления правами доступа</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-card">
+                        <i class="fas fa-stethoscope feature-icon"></i>
+                        <div>
+                            <h4>Диагностика</h4>
+                            <p>Встроенная система диагностики системы</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-card">
+                        <i class="fas fa-server feature-icon"></i>
+                        <div>
+                            <h4>Управление сервером</h4>
+                            <p>Полный контроль над серверными функциями</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">Преимущества</span>
+                </h2>
+                <p class="section-subtitle">Почему стоит выбрать Nexus Prime Bot</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card glass-card">
+                    <div class="card-icon orange">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Быстрый запуск</h3>
+                    <p>Мгновенный старт работы с минимальной настройкой. Запустите launcher.py и бот готов к работе!</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="card-icon blue">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Авто-обновления</h3>
+                    <p>Бот автоматически проверяет и устанавливает обновления с GitHub. Всегда актуальная версия!</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="card-icon purple">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3>Безопасность</h3>
+                    <p>Умная система владельца защищает от несанкционированного доступа к критическим функциям.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="card-icon green">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Мониторинг</h3>
+                    <p>Встроенная диагностика системы отслеживает состояние бота и окружения в реальном времени.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="card-icon orange">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Гибкость</h3>
+                    <p>Настраиваемые параметры и модульная архитектура позволяют адаптировать бота под любые нужды.</p>
+                </div>
+                <div class="feature-card glass-card">
+                    <div class="card-icon blue">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Open Source</h3>
+                    <p>Открытый исходный код на GitHub. Изучайте, модифицируйте и улучшайте под свои задачи.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="install" class="installation section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">Как начать</span>
+                </h2>
+                <p class="section-subtitle">Простая установка за 4 шага</p>
+            </div>
+            <div class="steps-container">
+                <div class="step-card glass-card">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-code-branch"></i> Клонируйте репозиторий</h3>
+                        <div class="code-block">
+                            <code>git clone https://github.com/VovaLoV/Nexus-Prime-Bot.git</code>
+                            <button class="copy-btn" onclick="copyToClipboard('git clone https://github.com/VovaLoV/Nexus-Prime-Bot.git')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card glass-card">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3><i class="fab fa-python"></i> Установите Python</h3>
+                        <p>Убедитесь, что у вас установлен Python 3.8 или выше</p>
+                        <div class="code-block">
+                            <code>python --version</code>
+                            <button class="copy-btn" onclick="copyToClipboard('python --version')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card glass-card">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-play"></i> Запустите launcher.py</h3>
+                        <p>Launcher автоматически установит все зависимости</p>
+                        <div class="code-block">
+                            <code>python launcher.py</code>
+                            <button class="copy-btn" onclick="copyToClipboard('python launcher.py')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="step-card glass-card">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-key"></i> Настройте токен</h3>
+                        <p>Введите токен вашего Discord бота при первом запуске</p>
+                        <div class="code-block">
+                            <code>nexus_config.json</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="install-actions">
+                <a href="https://github.com/VovaLoV/Nexus-Prime-Bot" target="_blank" class="btn btn-primary btn-large">
+                    <i class="fab fa-github"></i>
+                    Перейти на GitHub
+                </a>
+                <a href="https://discord.com" target="_blank" class="btn btn-secondary btn-large">
+                    <i class="fab fa-discord"></i>
+                    Discord
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Section -->
+    <section id="status" class="status section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="gradient-text">Статус проекта</span>
+                </h2>
+                <p class="section-subtitle">Текущее состояние разработки</p>
+            </div>
+            <div class="status-container">
+                <div class="status-card glass-card">
+                    <div class="status-header">
+                        <div class="status-badge active">
+                            <span class="status-dot"></span>
+                            Активно разрабатывается
+                        </div>
+                    </div>
+                    <div class="status-info">
+                        <div class="version-box">
+                            <span class="version-label">Версия</span>
+                            <span class="version-number">v1.4.4</span>
+                            <span class="version-tag beta">Beta</span>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Последнее обновление: 2025</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Стабильная работа</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-road"></i>
+                                <span>В разработке</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="links-card glass-card">
+                    <h3>Полезные ссылки</h3>
+                    <div class="links-list">
+                        <a href="https://github.com/VovaLoV/Nexus-Prime-Bot" target="_blank" class="link-item">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub Репозиторий</span>
+                            <i class="fas fa-arrow-right link-arrow"></i>
+                        </a>
+                        <a href="https://discord.com" target="_blank" class="link-item">
+                            <i class="fab fa-discord"></i>
+                            <span>Discord Сервер</span>
+                            <i class="fas fa-arrow-right link-arrow"></i>
+                        </a>
+                        <a href="#" class="link-item">
+                            <i class="fas fa-book"></i>
+                            <span>Документация</span>
+                            <i class="fas fa-arrow-right link-arrow"></i>
+                        </a>
+                        <a href="#" class="link-item">
+                            <i class="fas fa-bug"></i>
+                            <span>Сообщить об ошибке</span>
+                            <i class="fas fa-arrow-right link-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🤖</span>
+                        <span class="logo-text">Nexus Prime</span>
+                    </div>
+                    <p>Современный Discord-бот для управления мультивселенной</p>
+                    <div class="social-links">
+                        <a href="https://github.com/VovaLoV/Nexus-Prime-Bot" target="_blank" class="social-link">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://discord.com" target="_blank" class="social-link">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Навигация</h4>
+                        <ul>
+                            <li><a href="#hero">Главная</a></li>
+                            <li><a href="#about">О проекте</a></li>
+                            <li><a href="#features">Преимущества</a></li>
+                            <li><a href="#install">Установка</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Ресурсы</h4>
+                        <ul>
+                            <li><a href="https://github.com/VovaLoV/Nexus-Prime-Bot" target="_blank">GitHub</a></li>
+                            <li><a href="#">Документация</a></li>
+                            <li><a href="#">Поддержка</a></li>
+                            <li><a href="#">Сообщество</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="authors">
+                    <p>
+                        <i class="fas fa-heart"></i> Создано с любовью
+                        <span class="author-name">Вова (VovaLoV)</span> & 
+                        <span class="author-name">Рокси 🐺</span>
+                    </p>
+                </div>
+                <div class="license">
+                    <p>
+                        <i class="fas fa-balance-scale"></i>
+                        Лицензия: <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>
+                    </p>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2025 Nexus Prime Bot. Все права защищены.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
