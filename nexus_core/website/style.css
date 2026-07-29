@@ -818,62 +818,43 @@ h1, h2, h3, h4 {
     margin-top: 10px;
 }
 
-/* Join Section - Invitation Card */
+/* Join Section - Invitation Card (Fifth World Card Style) */
 .join {
     padding: var(--section-padding);
     background: var(--bg-dark);
 }
 
-.invitation-card {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 60px 40px;
-    background: var(--bg-card);
-    border-radius: 25px;
-    backdrop-filter: blur(15px);
-    border: 2px solid rgba(255, 107, 53, 0.3);
-    text-align: center;
-    transition: all var(--transition-normal);
-    box-shadow: var(--shadow-lg), 0 0 40px rgba(255, 107, 53, 0.15);
+/* Invitation card uses world-card styles + special button styling */
+.invitation-card .world-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.invitation-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--orange-primary);
-    box-shadow: var(--shadow-lg), var(--glow-orange);
+.invitation-card .world-desc {
+    opacity: 1;
+    max-height: 200px;
+    margin-bottom: 10px;
 }
 
-.invitation-icon {
-    font-size: 5rem;
-    color: var(--orange-primary);
-    margin-bottom: 30px;
-    animation: float 3s ease-in-out infinite;
-}
-
-.invitation-title {
-    font-size: 2.2rem;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, var(--orange-primary), var(--blue-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.invitation-description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--text-light);
-    margin-bottom: 40px;
-}
-
-.discord-btn {
+.invitation-card .discord-btn {
     background: linear-gradient(135deg, #5865F2, #7289DA);
     box-shadow: 0 0 30px rgba(88, 101, 242, 0.5);
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
 }
 
-.discord-btn:hover {
+.invitation-card .discord-btn:hover {
     background: linear-gradient(135deg, #7289DA, #5865F2);
     box-shadow: 0 10px 50px rgba(88, 101, 242, 0.7);
+    transform: translateY(-3px);
+}
+
+/* Special glow for main portal */
+.invitation-card:hover .world-glow {
+    opacity: 0.5;
+    background: radial-gradient(circle, rgba(88, 101, 242, 0.4) 0%, transparent 70%);
 }
 
 /* Status Section */
