@@ -1,4 +1,7 @@
-# Nexus Prime Bot v1.4.0 (Beta)
+# Версия проекта читается из nexus_core/VERSION.txt
+# Не редактируйте версию вручную в этом файле!
+
+# Nexus Prime Bot v{VERSION} ({STATUS})
 
 Discord-бот для управления мультивселенной Нексус Прайм
 
@@ -67,6 +70,21 @@ nexus-prime-bot/
 
 ## Лицензия:
 MIT License
+
+---
+
+## Текущая версия:
+Для получения актуальной версии выполните команду:
+```bash
+python -c "exec(open('nexus_core/VERSION.txt').read().split('#')[0]); print(f'Лаунчер: v{launcher_version}\\nБот: v{bot_version}\\nСтатус: {release_tag}')"
+```
+
+Или посмотрите файл `nexus_core/VERSION.txt`:
+- Лаунчер: (читается из VERSION.txt)
+- Бот: (читается из VERSION.txt)
+- Статус: (читается из VERSION.txt)
+
+> **Для обновления версий редактируйте файл `nexus_core/VERSION.txt`**
 
 ---
 **Nexus Prime Bot** - ваш надёжный помощник в Discord! 💜
