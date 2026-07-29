@@ -329,3 +329,4 @@ if __name__ == "__main__":
         
         print(f"{Colors.GREEN}✓ Откат завершен{Colors.RESET}")
         sys.exit(1)
+
