@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Nexus Prime Bot Launcher v1.4.0
+Nexus Prime Bot Launcher v1.4.1
 Главный файл запуска для бота Nexus Prime
 Автор: Вова (VovaLoV)
 Помощница: Рокси 🐺
@@ -29,9 +29,20 @@ class Colors:
 
 def print_banner():
     """Выводит приветственный баннер"""
+    # Читаем версию из файла для отображения в баннере
+    version_path = Path(__file__).parent / "nexus_core" / "VERSION.txt"
+    launcher_ver = "unknown"
+    if version_path.exists():
+        with open(version_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('launcher_version='):
+                    launcher_ver = line.split('=')[1].strip()
+                    break
+    
     print(f"{Colors.CYAN}{Colors.BOLD}")
     print("╔══════════════════════════════════════════════════════╗")
-    print("║         NEXUS PRIME BOT LAUNCHER v1.4.0              ║")
+    print(f"║         NEXUS PRIME BOT LAUNCHER v{launcher_ver:<6}              ║")
     print("║              Discord Multiverse Bot                  ║")
     print("║                                                      ║")
     print("║  🤖 Создатель: Вова (VovaLoV)                        ║")
@@ -120,15 +131,85 @@ def read_version():
     return versions
 
 def check_github_versions(local_versions):
-    """Проверяет версии на GitHub (заглушка)"""
+    """Проверяет версии на GitHub и запускает установщик при наличии обновлений"""
     print(f"{Colors.BLUE}[3/6] Проверка обновлений...{Colors.RESET}")
+    
+    import urllib.request
+    import tempfile
     
     # Проверяем, включен ли сайт
     website_enabled = local_versions.get('website_enabled', '0')
     if website_enabled == '1':
-        print(f"  ~ Сайт: проверка обновлений сайта... (требуется реализация)")
+        print(f"  ~ Сайт: включен, проверка обновлений сайта... (требуется реализация)")
     else:
         print(f"  ~ Сайт: отключен, проверка не выполняется")
+    
+    # URL для скачивания файлов с GitHub
+    github_version_url = "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/VERSION.txt"
+    github_updater_url = "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/nexus_updater.py"
+    
+    try:
+        # Скачиваем VERSION.txt с GitHub
+        print("  Скачивание VERSION.txt с GitHub...")
+        with urllib.request.urlopen(github_version_url, timeout=10) as response:
+            github_version_content = response.read().decode('utf-8')
+        
+        # Парсим версии с GitHub
+        github_versions = {}
+        for line in github_version_content.splitlines():
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                github_versions[key.strip()] = value.strip()
+        
+        github_launcher_ver = github_versions.get('launcher_version', '0.0.0')
+        github_bot_ver = github_versions.get('bot_version', '0.0.0')
+        local_launcher_ver = local_versions.get('launcher_version', '0.0.0')
+        local_bot_ver = local_versions.get('bot_version', '0.0.0')
+        
+        print(f"  Локальная версия лаунчера: v{local_launcher_ver}")
+        print(f"  Версия на GitHub: v{github_launcher_ver}")
+        print(f"  Локальная версия бота: v{local_bot_ver}")
+        print(f"  Версия бота на GitHub: v{github_bot_ver}")
+        
+        # Сравниваем версии (простое строковое сравнение)
+        def version_compare(v1, v2):
+            """Сравнивает две версии. Возвращает True если v2 > v1"""
+            try:
+                parts1 = [int(x) for x in v1.split('.')]
+                parts2 = [int(x) for x in v2.split('.')]
+                return parts2 > parts1
+            except:
+                return v2 > v1
+        
+        update_available = version_compare(local_launcher_ver, github_launcher_ver) or \
+                          version_compare(local_bot_ver, github_bot_ver)
+        
+        if update_available:
+            print(f"\n  {Colors.GREEN}✓ Найдено обновление! Запускаю установщик...{Colors.RESET}")
+            
+            # Скачиваем nexus_updater.py во временную папку
+            temp_dir = tempfile.mkdtemp(prefix='nexus_update_')
+            updater_path = os.path.join(temp_dir, 'nexus_updater.py')
+            
+            print(f"  Скачивание установщика в {temp_dir}...")
+            with urllib.request.urlopen(github_updater_url, timeout=10) as response:
+                with open(updater_path, 'wb') as f:
+                    f.write(response.read())
+            
+            print(f"  Запуск установщика...")
+            # Запускаем установщик
+            subprocess.Popen([sys.executable, updater_path])
+            
+            # Выходим из лаунчера
+            print(f"  Лаунчер завершает работу...")
+            sys.exit(0)
+        else:
+            print(f"  {Colors.GREEN}✓ Установлена последняя версия{Colors.RESET}")
+    
+    except Exception as e:
+        print(f"  {Colors.YELLOW}~ Не удалось проверить обновления: {e}{Colors.RESET}")
+        print(f"  Продолжаем работу с локальной версией...")
     
     print(f"  {Colors.GREEN}✓ Проверка обновлений завершена{Colors.RESET}\n")
 
