@@ -195,6 +195,7 @@ async def prime_command(ctx):
         embed.add_field(name="!загрузить", value="🔥 СЕКРЕТНАЯ: Перезагрузить конфигурацию", inline=False)
         embed.add_field(name="!перезапуск", value="🔥 СЕКРЕТНАЯ: Перезапустить бота", inline=False)
         embed.add_field(name="!остановить", value="🔥 СЕКРЕТНАЯ: Остановить бота", inline=False)
+        embed.add_field(name="!сайт", value="🔥 СЕКРЕТНАЯ: Управление ссылкой Discord портала", inline=False)
         embed.set_footer(text=f"Nexus Prime Bot v1.4.5 | Автор: Вова (VovaLoV)")
         
         try:
@@ -210,6 +211,92 @@ async def prime_command(ctx):
         
         # Временное сообщение которое удалится через 3 секунды
         temp_msg = await ctx.send("⛔ Неверная команда", delete_after=3)
+
+
+@bot.command(name="сайт", aliases=["portal", "discrod_link"])
+async def site_command(ctx, action=None, new_link=None):
+    """Секретная команда владельца для управления ссылкой Discord портала"""
+    config_path = CONFIG_PATH
+    invite_link_path = os.path.join(BOT_DIR, "website", "invite_link.json")
+    
+    # Читаем актуальный конфиг
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            current_config = json.load(f)
+        existing_owner_id = current_config.get("owner_id", "")
+    except (FileNotFoundError, json.JSONDecodeError):
+        return
+    
+    # Проверяем владельца
+    if str(ctx.author.id) != existing_owner_id:
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            pass
+        temp_msg = await ctx.send("⛔ Неверная команда", delete_after=3)
+        return
+    
+    # Если нет аргументов - показываем текущую ссылку
+    if action is None:
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            pass
+        
+        try:
+            with open(invite_link_path, "r", encoding="utf-8") as f:
+                invite_data = json.load(f)
+            current_invite = invite_data.get("discord_invite", "Не установлена")
+            
+            embed = discord.Embed(
+                title="🌐 Портал Nexus Prime",
+                description=f"Текущая ссылка Discord:\n`{current_invite}`",
+                color=discord.Color.blue()
+            )
+            embed.add_field(name="Использование", value="`!сайт ссылка [новая_ссылка]`", inline=False)
+            embed.set_footer(text="Команда !сайт")
+            await ctx.author.send(embed=embed)
+        except Exception as e:
+            await ctx.author.send(f"❌ Ошибка чтения файла: {e}")
+        return
+    
+    # Обработка команды !сайт ссылка [новая_ссылка]
+    if action.lower() in ["ссылка", "link", "set"]:
+        if new_link is None:
+            await ctx.author.send("⚠ Укажите новую ссылку!\nПример: `!сайт ссылка https://discord.gg/yourcode`")
+            return
+        
+        # Обновляем invite_link.json
+        try:
+            with open(invite_link_path, "r", encoding="utf-8") as f:
+                invite_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            invite_data = {"discord_invite": "", "updated_by": "bot", "last_update": ""}
+        
+        invite_data["discord_invite"] = new_link.strip()
+        invite_data["updated_by"] = str(ctx.author.name)
+        invite_data["last_update"] = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
+        
+        try:
+            with open(invite_link_path, "w", encoding="utf-8") as f:
+                json.dump(invite_data, f, indent=4, ensure_ascii=False)
+            
+            embed = discord.Embed(
+                title="✅ Ссылка обновлена!",
+                description=f"Новая ссылка Discord:\n`{new_link.strip()}`",
+                color=discord.Color.green()
+            )
+            embed.add_field(name="Обновлено", value=f"{ctx.author.name}", inline=True)
+            embed.add_field(name="Дата", value=invite_data["last_update"], inline=True)
+            embed.set_footer(text="Сайт автоматически обновит ссылку")
+            await ctx.author.send(embed=embed)
+            print(f"✅ Discord invite обновлён: {new_link.strip()}")
+        except Exception as e:
+            await ctx.author.send(f"❌ Ошибка сохранения: {e}")
+        return
+    
+    # Неизвестный подкоманда
+    await ctx.author.send("⚠ Неизвестная подкоманда.\nИспользуйте: `!сайт ссылка [новая_ссылка]`")
 
 @bot.command(name="статус", aliases=["status"])
 async def status_command(ctx):
