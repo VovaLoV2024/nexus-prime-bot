@@ -198,3 +198,133 @@ def download_files_to_sandbox(sandbox_dir):
     return downloaded_files
 
 
+if __name__ == "__main__":
+    """Основная функция updater'а"""
+    print_banner()
+    
+    # 1. Проверяем активные процессы
+    check_running_processes()
+    
+    # 2. Создаем песочницу
+    sandbox_dir = create_sandbox()
+    
+    # 3. Создаем папку истории
+    history_dir = Path(__file__).parent / "update_sandbox" / "history"
+    history_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 4. Создаем папку для текущего обновления с датой/временем
+    from datetime import datetime
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    current_update_dir = history_dir / f"updater-{timestamp}"
+    current_update_dir.mkdir(exist_ok=True)
+    
+    # 5. Скачиваем файлы в песочницу
+    try:
+        downloaded_files = download_files_to_sandbox(sandbox_dir)
+        
+        # 6. Копируем скачанные файлы в историю
+        for filename in downloaded_files:
+            src = sandbox_dir / filename
+            dst = current_update_dir / filename
+            if src.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+        
+        # 7. Создаем backup текущих файлов
+        print(f"{Colors.BLUE}[4/6] Создание резервной копии...{Colors.RESET}")
+        backup_dir = sandbox_dir / "backup"
+        backup_dir.mkdir(exist_ok=True)
+        
+        files_to_backup = [
+            "launcher.py",
+            "nexus_bot.py",
+            "nexus_setup.py",
+            "requirements.txt",
+            "VERSION.txt"
+        ]
+        
+        nexus_core_dir = Path(__file__).parent
+        for filename in files_to_backup:
+            src = nexus_core_dir / filename
+            if src.exists():
+                shutil.copy2(src, backup_dir / filename)
+                print(f"  ✓ Скопирован {filename}")
+        
+        print(f"{Colors.GREEN}✓ Backup создан{Colors.RESET}\n")
+        
+        # 8. Заменяем старые файлы новыми
+        print(f"{Colors.BLUE}[5/6] Замена файлов...{Colors.RESET}")
+        for filename in downloaded_files:
+            if filename.startswith("nexus_server_config/"):
+                # Файлы из подпапки
+                src = sandbox_dir / filename
+                dst = nexus_core_dir / filename
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                print(f"  ✓ Обновлен {filename}")
+            else:
+                # Обычные файлы
+                src = sandbox_dir / filename
+                dst = nexus_core_dir / filename
+                shutil.copy2(src, dst)
+                print(f"  ✓ Обновлен {filename}")
+        
+        print(f"{Colors.GREEN}✓ Файлы заменены{Colors.RESET}\n")
+        
+        # 9. Проверяем что файлы заменились
+        print(f"{Colors.BLUE}[6/6] Проверка обновления...{Colors.RESET}")
+        for filename in downloaded_files:
+            if not filename.startswith("nexus_server_config/"):
+                dst = nexus_core_dir / filename
+                if dst.exists() and dst.stat().st_size > 0:
+                    print(f"  ✓ {filename} ({dst.stat().st_size} байт)")
+                else:
+                    print(f"  {Colors.RED}✗ {filename} не найден или пустой!{Colors.RESET}")
+                    raise Exception(f"Файл {filename} не обновился!")
+        
+        print(f"{Colors.GREEN}✓ Все файлы проверены{Colors.RESET}\n")
+        
+        # 10. Удаляем старую историю (оставляем только 3 последние)
+        history_folders = sorted([d for d in history_dir.iterdir() if d.is_dir()], 
+                                 key=lambda x: x.name, reverse=True)
+        if len(history_folders) > 3:
+            print(f"{Colors.YELLOW}~ Удаляем старую историю...{Colors.RESET}")
+            for old_folder in history_folders[3:]:
+                shutil.rmtree(old_folder)
+                print(f"  Удалена {old_folder.name}")
+        
+        # 11. Очищаем песочницу (но оставляем историю)
+        for item in sandbox_dir.iterdir():
+            if item.name != "history":
+                if item.is_file():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+        
+        print(f"{Colors.GREEN}✓ Обновление завершено успешно!{Colors.RESET}\n")
+        
+        # 12. Запускаем обновленный launcher.py
+        print(f"{Colors.CYAN}Запускаю обновленный лаунчер...{Colors.RESET}")
+        launcher_path = nexus_core_dir.parent / "launcher.py"
+        subprocess.Popen([sys.executable, str(launcher_path)])
+        
+        # 13. Ждем немного и завершаемся
+        time.sleep(2)
+        sys.exit(0)
+        
+    except Exception as e:
+        print(f"{Colors.RED} Ошибка обновления: {e}{Colors.RESET}")
+        print(f"{Colors.YELLOW}~ Делаем откат...{Colors.RESET}")
+        
+        # Откат: восстанавливаем из backup
+        backup_dir = sandbox_dir / "backup"
+        if backup_dir.exists():
+            nexus_core_dir = Path(__file__).parent
+            for backup_file in backup_dir.iterdir():
+                src = backup_file
+                dst = nexus_core_dir / backup_file.name
+                shutil.copy2(src, dst)
+                print(f"  ✓ Восстановлен {backup_file.name}")
+        
+        print(f"{Colors.GREEN}✓ Откат завершен{Colors.RESET}")
+        sys.exit(1)
