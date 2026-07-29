@@ -477,4 +477,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"{Colors.RED}✗ Критическая ошибка лаунчера: {e}{Colors.RESET}")
         sys.exit(1)
-

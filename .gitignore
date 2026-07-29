@@ -6,14 +6,13 @@ __pycache__/
 *.pyd
 
 # Dependencies
-.venv/
 venv/
-env/
+.venv/
 .env
 .env.local
-.env.*
+*.env.*
 
-# Build artifacts
+# Build and distribution artifacts
 build/
 dist/
 *.egg-info/
@@ -21,18 +20,24 @@ dist/
 # Logs
 *.log
 
-# Editors
-.vscode/
-.idea/
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
+*.bak
 *.swp
-*.swo
 
-# Coverage
+# Coverage reports
 .coverage
-coverage/
 htmlcov/
+coverage/
 
-# Testing
-.pytest_cache/
-.mypy_cache/
+# Temporary files
+*.tmp
+*.temp
+
+# History directories (from update sandbox)
+nexus_core/update_sandbox/update_sandbox/history/
 ```
