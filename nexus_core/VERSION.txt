@@ -1,4 +1,4 @@
-launcher_version=1.4.1
+launcher_version=1.4.2
 bot_version=1.4.3
 release_tag=beta
 website_enabled=0
