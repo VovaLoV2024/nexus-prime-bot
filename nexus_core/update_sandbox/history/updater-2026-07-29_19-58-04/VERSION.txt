@@ -1,12 +1,10 @@
 launcher_version=1.4.2
-bot_version=1.4.6
-website_version=1.0.0
+bot_version=1.4.4
 release_tag=beta
 website_enabled=0
 
 # ИНСТРУКЦИЯ:
 # Если меняешь launcher.py → увеличь launcher_version
 # Если меняешь nexus_bot.py → увеличь bot_version
-# Если меняешь файлы сайта → увеличь website_version
 # release_tag=stable когда проект готов
 # website_enabled=1 включает сайт, =0 отключает полностью
