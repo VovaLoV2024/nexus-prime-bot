@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCounter();
     initParallax();
     setLastUpdateDate();
+    loadDiscordInvite();
 });
 
 /**
@@ -322,6 +323,27 @@ function setLastUpdateDate() {
         const currentDate = new Date();
         const year = currentDate.getFullYear();
         lastUpdateElement.textContent = `${year}`;
+    }
+}
+
+/**
+ * Load Discord Invite Link from JSON
+ */
+async function loadDiscordInvite() {
+    const inviteBtn = document.getElementById('discordInviteBtn');
+    
+    if (!inviteBtn) return;
+    
+    try {
+        const response = await fetch('invite_link.json');
+        const data = await response.json();
+        
+        if (data.discord_invite) {
+            inviteBtn.href = data.discord_invite.trim();
+        }
+    } catch (error) {
+        console.error('Failed to load Discord invite:', error);
+        inviteBtn.href = '#';
     }
 }
 
