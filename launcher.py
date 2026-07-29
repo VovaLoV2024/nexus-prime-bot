@@ -196,7 +196,9 @@ def check_github_versions(local_versions):
                 
                 # Запускаем updater из песочницы
                 subprocess.Popen([sys.executable, str(updater_path)])
-                # Завершаем лаунчер
+                # Ждём 2 секунды чтобы updater успел запуститься
+                time.sleep(2)
+                # Теперь закрываемся
                 sys.exit(0)
 
             except Exception as e:
