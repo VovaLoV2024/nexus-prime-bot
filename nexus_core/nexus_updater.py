@@ -13,6 +13,7 @@ import shutil
 import urllib.request
 import tempfile
 import time
+import subprocess
 from pathlib import Path
 
 # Цвета для консоли
