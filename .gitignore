@@ -1,43 +1,36 @@
 ```
-# Python
-__pycache__/
+# Compiled and build artifacts
 *.pyc
-*.pyo
-*.pyd
+__pycache__/
+*.o
+*.obj
 
 # Dependencies
-venv/
 .venv/
+venv/
+node_modules/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
 .env
 .env.local
 *.env.*
 
-# Build and distribution artifacts
-build/
-dist/
-*.egg-info/
+# Editors
+.vscode/
+.idea/
 
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Backup files
-*~
-*.bak
-*.swp
-
-# Coverage reports
+# Coverage
 .coverage
-htmlcov/
 coverage/
+htmlcov/
 
-# Temporary files
-*.tmp
-*.temp
-
-# History directories (from update sandbox)
-nexus_core/update_sandbox/update_sandbox/history/
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
 ```
