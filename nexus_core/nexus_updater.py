@@ -161,8 +161,12 @@ def download_files_to_sandbox(sandbox_dir):
     # Если сайт включен, добавляем файлы сайта
     if website_enabled == '1':
         print(f"  {Colors.CYAN}Сайт включен, скачиваем файлы сайта...{Colors.RESET}")
-        # Здесь можно добавить URL файлов сайта
-        # files_to_download.append(("index.html", "..."))
+        files_to_download.extend([
+            ("website/index.html", "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/website/index.html"),
+            ("website/style.css", "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/website/style.css"),
+            ("website/script.js", "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/website/script.js"),
+            ("website/invite_link.json", "https://raw.githubusercontent.com/VovaLoV2024/nexus-prime-bot/main/nexus_core/website/invite_link.json"),
+        ])
 
     downloaded_files = []
 

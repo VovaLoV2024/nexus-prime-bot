@@ -3,16 +3,13 @@ from discord.ext import commands
 import json
 import sys
 import os
+import sys
 import asyncio
-import subprocess
-import signal
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Получаем путь к директории бота
 BOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BOT_DIR, "nexus_config.json")
-WEBSITE_STATUS_PATH = os.path.join(BOT_DIR, "website", "website_status.json")
-WEBSITE_DIR = os.path.join(BOT_DIR, "website")
 
 def load_config():
     """Загружает конфигурацию из nexus_config.json"""
@@ -216,10 +213,11 @@ async def prime_command(ctx):
         temp_msg = await ctx.send("⛔ Неверная команда", delete_after=3)
 
 
-@bot.command(name="сайт", aliases=["portal", "discord_link"])
-async def site_command(ctx, action=None, new_value=None):
-    """Секретная команда владельца для управления веб-сервером и ссылкой Discord портала"""
+@bot.command(name="сайт", aliases=["portal", "discrod_link"])
+async def site_command(ctx, action=None, new_link=None):
+    """Секретная команда владельца для управления ссылкой Discord портала"""
     config_path = CONFIG_PATH
+    invite_link_path = os.path.join(BOT_DIR, "website", "invite_link.json")
     
     # Читаем актуальный конфиг
     try:
@@ -229,215 +227,53 @@ async def site_command(ctx, action=None, new_value=None):
     except (FileNotFoundError, json.JSONDecodeError):
         return
     
-    # Проверяем владельца - если не владелец, молча удаляем сообщение
+    # Проверяем владельца
     if str(ctx.author.id) != existing_owner_id:
         try:
             await ctx.message.delete()
         except discord.errors.Forbidden:
             pass
+        temp_msg = await ctx.send("⛔ Неверная команда", delete_after=3)
         return
     
-    # Удаляем сообщение владельца для секретности
-    try:
-        await ctx.message.delete()
-    except discord.errors.Forbidden:
-        pass
-    
-    # Если нет аргументов - показываем текущий статус и ссылку
+    # Если нет аргументов - показываем текущую ссылку
     if action is None:
+        try:
+            await ctx.message.delete()
+        except discord.errors.Forbidden:
+            pass
+        
         try:
             with open(invite_link_path, "r", encoding="utf-8") as f:
                 invite_data = json.load(f)
             current_invite = invite_data.get("discord_invite", "Не установлена")
-        except:
-            current_invite = "Не установлена"
-        
-        # Читаем статус сервера
-        server_status = "🔴 Остановлен"
-        server_port = "8080"
-        server_pid = "N/A"
-        if os.path.exists(WEBSITE_STATUS_PATH):
-            try:
-                with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                    status_data = json.load(f)
-                if status_data.get("enabled", False):
-                    server_status = "🟢 Работает"
-                    server_port = str(status_data.get("port", "8080"))
-                    server_pid = str(status_data.get("pid", "N/A"))
-            except:
-                pass
-        
-        embed = discord.Embed(
-            title="🌐 Портал Nexus Prime - Панель Управления",
-            description=f"**Статус сервера:** {server_status}\n**Порт:** {server_port}\n**PID:** {server_pid}\n\n**Текущая ссылка Discord:**\n`{current_invite}`",
-            color=discord.Color.blue()
-        )
-        embed.add_field(name="📋 Доступные команды:", value="`!сайт включить` - Запустить веб-сервер\n`!сайт выключить` - Остановить веб-сервер\n`!сайт статус` - Показать статус сервера\n`!сайт ссылка [url]` - Обновить ссылку Discord\n`!сайт порт [число]` - Изменить порт (по умолчанию 8080)", inline=False)
-        embed.set_footer(text="Секретная команда владельца")
-        await ctx.author.send(embed=embed)
-        return
-    
-    # Обработка подкоманд
-    action_lower = action.lower()
-    
-    # !сайт включить - запустить веб-сервер
-    if action_lower in ["включить", "start", "on"]:
-        # Читаем текущий статус
-        port = 8080
-        if os.path.exists(WEBSITE_STATUS_PATH):
-            try:
-                with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                    status_data = json.load(f)
-                port = status_data.get("port", 8080)
-            except:
-                pass
-        
-        # Проверяем, не запущен ли уже сервер
-        if os.path.exists(WEBSITE_STATUS_PATH):
-            try:
-                with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                    status_data = json.load(f)
-                if status_data.get("enabled", False):
-                    pid = status_data.get("pid")
-                    if pid:
-                        try:
-                            os.kill(pid, 0)  # Проверяем, существует ли процесс
-                            await ctx.author.send("⚠ Веб-сервер уже запущен!")
-                            return
-                        except OSError:
-                            pass  # Процесс не существует, продолжаем
-            except:
-                pass
-        
-        # Запускаем веб-сервер в фоновом режиме
-        try:
-            process = subprocess.Popen(
-                [sys.executable, "-m", "http.server", str(port), "--directory", WEBSITE_DIR],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True
-            )
-            
-            # Сохраняем статус
-            status_data = {
-                "enabled": True,
-                "port": port,
-                "pid": process.pid,
-                "started_at": __import__("datetime").datetime.now().isoformat()
-            }
-            with open(WEBSITE_STATUS_PATH, "w", encoding="utf-8") as f:
-                json.dump(status_data, f, indent=2, ensure_ascii=False)
             
             embed = discord.Embed(
-                title="✅ Веб-сервер запущен!",
-                description=f"Портал доступен на порту **{port}**\n\nURL: `http://localhost:{port}`\nили `http://<ваш-ip>:{port}`",
-                color=discord.Color.green()
+                title="🌐 Портал Nexus Prime",
+                description=f"Текущая ссылка Discord:\n`{current_invite}`",
+                color=discord.Color.blue()
             )
-            embed.add_field(name="PID процесса", value=str(process.pid), inline=True)
-            embed.set_footer(text="Используйте !сайт выключить для остановки")
-            await ctx.author.send(embed=embed)
-            print(f"✅ Веб-сервер запущен на порту {port} (PID: {process.pid})")
-        except Exception as e:
-            await ctx.author.send(f"❌ Ошибка запуска сервера: {e}")
-        return
-    
-    # !сайт выключить - остановить веб-сервер
-    if action_lower in ["выключить", "stop", "off"]:
-        if not os.path.exists(WEBSITE_STATUS_PATH):
-            await ctx.author.send("⚠ Веб-сервер не запущен!")
-            return
-        
-        try:
-            with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                status_data = json.load(f)
-            
-            if not status_data.get("enabled", False):
-                await ctx.author.send("⚠ Веб-сервер уже остановлен!")
-                return
-            
-            pid = status_data.get("pid")
-            if pid:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                    print(f"✅ Веб-сервер остановлен (PID: {pid})")
-                except OSError as e:
-                    print(f"~ Предупреждение при остановке процесса {pid}: {e}")
-            
-            # Обновляем статус
-            status_data["enabled"] = False
-            status_data["stopped_at"] = __import__("datetime").datetime.now().isoformat()
-            with open(WEBSITE_STATUS_PATH, "w", encoding="utf-8") as f:
-                json.dump(status_data, f, indent=2, ensure_ascii=False)
-            
-            embed = discord.Embed(
-                title="🔴 Веб-сервер остановлен",
-                description="Портал закрыт.",
-                color=discord.Color.red()
-            )
+            embed.add_field(name="Использование", value="`!сайт ссылка [новая_ссылка]`", inline=False)
+            embed.set_footer(text="Команда !сайт")
             await ctx.author.send(embed=embed)
         except Exception as e:
-            await ctx.author.send(f"❌ Ошибка остановки сервера: {e}")
+            await ctx.author.send(f"❌ Ошибка чтения файла: {e}")
         return
     
-    # !сайт статус - показать статус сервера
-    if action_lower in ["статус", "status"]:
-        server_status = "🔴 Остановлен"
-        server_port = "8080"
-        server_pid = "N/A"
-        uptime = "N/A"
-        
-        if os.path.exists(WEBSITE_STATUS_PATH):
-            try:
-                with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                    status_data = json.load(f)
-                if status_data.get("enabled", False):
-                    server_status = "🟢 Работает"
-                    server_port = str(status_data.get("port", "8080"))
-                    server_pid = str(status_data.get("pid", "N/A"))
-                    
-                    # Проверяем, жив ли процесс
-                    pid = status_data.get("pid")
-                    if pid:
-                        try:
-                            os.kill(pid, 0)
-                            # Вычисляем uptime
-                            started = status_data.get("started_at", "")
-                            if started:
-                                from datetime import datetime
-                                start_time = datetime.fromisoformat(started)
-                                delta = datetime.now() - start_time
-                                hours, remainder = divmod(int(delta.total_seconds()), 3600)
-                                minutes, seconds = divmod(remainder, 60)
-                                uptime = f"{hours}ч {minutes}м {seconds}с"
-                        except OSError:
-                            server_status = "🟡 Процесс не найден"
-            except Exception as e:
-                pass
-        
-        embed = discord.Embed(
-            title="📊 Статус веб-сервера",
-            description=f"**Статус:** {server_status}\n**Порт:** {server_port}\n**PID:** {server_pid}\n**Uptime:** {uptime}",
-            color=discord.Color.blue()
-        )
-        await ctx.author.send(embed=embed)
-        return
-    
-    # !сайт ссылка [url] - обновить ссылку Discord
-    if action_lower in ["ссылка", "link", "set"]:
-        if new_value is None:
+    # Обработка команды !сайт ссылка [новая_ссылка]
+    if action.lower() in ["ссылка", "link", "set"]:
+        if new_link is None:
             await ctx.author.send("⚠ Укажите новую ссылку!\nПример: `!сайт ссылка https://discord.gg/yourcode`")
             return
         
-        invite_link_path = os.path.join(BOT_DIR, "website", "invite_link.json")
-        
-        # Читаем текущий invite_link.json
+        # Обновляем invite_link.json
         try:
             with open(invite_link_path, "r", encoding="utf-8") as f:
                 invite_data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             invite_data = {"discord_invite": "", "updated_by": "bot", "last_update": ""}
         
-        invite_data["discord_invite"] = new_value.strip()
+        invite_data["discord_invite"] = new_link.strip()
         invite_data["updated_by"] = str(ctx.author.name)
         invite_data["last_update"] = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
         
@@ -447,57 +283,20 @@ async def site_command(ctx, action=None, new_value=None):
             
             embed = discord.Embed(
                 title="✅ Ссылка обновлена!",
-                description=f"Новая ссылка Discord:\n`{new_value.strip()}`",
+                description=f"Новая ссылка Discord:\n`{new_link.strip()}`",
                 color=discord.Color.green()
             )
             embed.add_field(name="Обновлено", value=f"{ctx.author.name}", inline=True)
             embed.add_field(name="Дата", value=invite_data["last_update"], inline=True)
             embed.set_footer(text="Сайт автоматически обновит ссылку")
             await ctx.author.send(embed=embed)
-            print(f"✅ Discord invite обновлён: {new_value.strip()}")
+            print(f"✅ Discord invite обновлён: {new_link.strip()}")
         except Exception as e:
             await ctx.author.send(f"❌ Ошибка сохранения: {e}")
         return
     
-    # !сайт порт [число] - изменить порт
-    if action_lower in ["порт", "port"]:
-        if new_value is None:
-            await ctx.author.send("⚠ Укажите порт!\nПример: `!сайт порт 8080`")
-            return
-        
-        try:
-            port = int(new_value)
-            if port < 1 or port > 65535:
-                raise ValueError("Порт должен быть от 1 до 65535")
-        except ValueError:
-            await ctx.author.send("⚠ Неверный формат порта! Укажите число от 1 до 65535")
-            return
-        
-        # Читаем текущий статус или создаём новый
-        if os.path.exists(WEBSITE_STATUS_PATH):
-            try:
-                with open(WEBSITE_STATUS_PATH, "r", encoding="utf-8") as f:
-                    status_data = json.load(f)
-            except:
-                status_data = {"enabled": False, "port": 8080}
-        else:
-            status_data = {"enabled": False, "port": 8080}
-        
-        status_data["port"] = port
-        
-        with open(WEBSITE_STATUS_PATH, "w", encoding="utf-8") as f:
-            json.dump(status_data, f, indent=2, ensure_ascii=False)
-        
-        embed = discord.Embed(
-            title="✅ Порт изменён",
-            description=f"Новый порт: **{port}**\n\nИспользуйте `!сайт включить` для запуска на новом порту.",
-            color=discord.Color.green()
-        )
-        await ctx.author.send(embed=embed)
-        return
-    
-    # Неизвестная подкоманда
-    await ctx.author.send("⚠ Неизвестная подкоманда.\nИспользуйте `!сайт` для просмотра всех команд.")
+    # Неизвестный подкоманда
+    await ctx.author.send("⚠ Неизвестная подкоманда.\nИспользуйте: `!сайт ссылка [новая_ссылка]`")
 
 @bot.command(name="статус", aliases=["status"])
 async def status_command(ctx):
