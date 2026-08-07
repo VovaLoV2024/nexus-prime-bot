@@ -829,6 +829,8 @@ h1, h2, h3, h4 {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    align-items: center;
+    text-align: center;
 }
 
 .invitation-card .world-desc {
@@ -840,9 +842,11 @@ h1, h2, h3, h4 {
 .invitation-card .discord-btn {
     background: linear-gradient(135deg, #5865F2, #7289DA);
     box-shadow: 0 0 30px rgba(88, 101, 242, 0.5);
-    width: 100%;
     justify-content: center;
     margin-top: 10px;
+    white-space: nowrap;
+    width: auto;
+    padding: 20px 35px;
 }
 
 .invitation-card .discord-btn:hover {
