@@ -351,7 +351,7 @@ async function loadDiscordInvite() {
  * Additional Interactive Effects
  */
 
-// World cards tilt effect
+// World cards tilt effect - reduced to minimal (2-3 degrees max)
 document.querySelectorAll('.world-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
@@ -361,8 +361,9 @@ document.querySelectorAll('.world-card').forEach(card => {
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        const rotateX = (y - centerY) / 10;
-        const rotateY = (centerX - x) / 10;
+        // Reduced from /10 to /40 for minimal tilt (2-3 degrees max)
+        const rotateX = (y - centerY) / 40;
+        const rotateY = (centerX - x) / 40;
         
         card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
     });
